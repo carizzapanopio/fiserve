@@ -26,9 +26,9 @@ class ConvertRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'amount'       =>  array('required','regex:/^\d*(\.\d{1,2})?$/'), //amount
-            // 'currency'     => 'required', //currency
-            // 'published_at' => 'required|date|exists:rates,published_at,currency,'.$this->input('currency'), //published at
+            'amount'       =>  array('required','regex:/^\d*(\.\d{1,2})?$/'), //amount
+            'currency'     => 'required', //currency
+            'published_at' => 'required|date|exists:rates,published_at,currency,'.$this->input('currency'), //published at
         ];
     }
 

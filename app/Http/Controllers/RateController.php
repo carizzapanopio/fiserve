@@ -90,10 +90,12 @@ class RateController extends Controller
     public function convert(ConvertRequest $request){
 
         
+         $params = $request->all();
+         $params = $params['params'];
+         
+        $rate = Rate::where(['currency' => $params['currency'], 'published_at' => $params['published_at']])->first();
 
-        $rate = Rate::where($request->only(['currency','published_at']))->first();
-
-        $convertedAmount = $request->amount * $rate->rate;
+        $convertedAmount = $params['amount'] * $rate->rate;
 
         // Post the converted amount to the given link
         // $client = new \GuzzleHttp\Client();
@@ -101,7 +103,7 @@ class RateController extends Controller
         // echo $res->getStatusCode();
         // echo $res->getHeaderLine('content-type');
         // echo $res->getBody();
-        
+        // var_dump($params);
         return response()->json($convertedAmount, 200);
     }
 
