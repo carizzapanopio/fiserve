@@ -25,9 +25,17 @@ class CurrencyController extends Controller
      */
     public function fetch()
     {
-        $xml = simplexml_load_file('http://www.floatrates.com/daily/usd.xml');
-        $this->storeCurrency($xml);
-        $this->storeRates($xml);
+
+       try {
+            $xml = simplexml_load_file('http://www.floatrates.com/daily/usd.xml');
+
+            $this->storeCurrency($xml);
+            $this->storeRates($xml);
+            
+            return response()->json(null,204);
+        } catch (Exception $e) {
+            return response()->json($e,400);
+        } 
     }
     /**
      * insertOrUpdate Will store new currency
@@ -124,13 +132,14 @@ class CurrencyController extends Controller
 
             $convertedAmount = $request->amount * $rate->rate;
 
+            return response()->json($convertedAmount, 200);
             $client = new \GuzzleHttp\Client();
             $res = $client->request('POST', 'https://www.dev.pclender.com/pclender/demo/post_demo.php',['data'=>$convertedAmount]);
-            echo $res->getStatusCode();
-            // 200
-            echo $res->getHeaderLine('content-type');
-            // 'application/json; charset=utf8'
-            echo $res->getBody();
+            // echo $res->getStatusCode();
+            // // 200
+            // echo $res->getHeaderLine('content-type');
+            // // 'application/json; charset=utf8'
+            // echo $res->getBody();
             // '{"id": 1420053, "name": "guzzle", ...}'
         }else{
             //no rate found on the said date.
