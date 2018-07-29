@@ -22,6 +22,6 @@ Route::get('test',function(){
 	return 'This is a test';
 });
 
-Route::get('fetch', 'CurrencyController@fetch');
-Route::get('currencies', 'CurrencyController@all');
-Route::post('convert', 'CurrencyController@convert');
+Route::get('rates/fetch', 'RateController@fetch');
+Route::post('rates/convert', 'RateController@convert');
+Route::get('rates/currencies', 'RateController@currencies');
