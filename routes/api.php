@@ -18,10 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('test',function(){
-	return 'This is a test';
-});
-
 Route::get('rates/fetch', 'RateController@fetch');
 Route::post('rates/convert', 'RateController@convert');
 Route::get('rates/currencies', 'RateController@currencies');

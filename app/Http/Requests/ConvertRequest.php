@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ConvertRequest extends FormRequest
@@ -43,18 +45,14 @@ class ConvertRequest extends FormRequest
             'exists' => 'No rates found on the requested date.',
         ];
     }
+
     /**
-     * Configure the validator instance.
+     * Return the error messages for the defined validation rules.
      *
-     * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
+     * @return array
      */
-    // public function withValidator($validator)
-    // {
-    //     $validator->after(function ($validator) {
-    //         if ($this->somethingElseIsInvalid()) {
-    //             $validator->errors()->add('field', 'Something is wrong with this field!');
-    //         }
-    //     });
-    // }
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 400));
+    }
+   
 }

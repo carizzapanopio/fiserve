@@ -18,16 +18,11 @@ class Rate extends Model
      *
      * @var array
      */
-    protected $fillable = ['currency',
-    					   'rate',
-                           'base_currency',
-                           'inverse_rate',
-    					   'published_at',
+    protected $fillable = [
+                            'currency',
+    				        'rate',
+                            'base_currency',
+                            'inverse_rate',
+    				        'published_at',
     					  ];
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = true;
 }

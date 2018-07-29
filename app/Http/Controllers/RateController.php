@@ -1,16 +1,18 @@
 <?php
-
+/**
+ * RateController 
+ * This is where the rates are managed and provides a conversion facility to the system.
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use GuzzleHttp\Exception\GuzzleException;
-// use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 use Validator;
 use Carbon\Carbon;
 use App\Currency;
 use App\Rate;
 use App\Http\Requests\ConvertRequest;
-
 
 class RateController extends Controller
 {
@@ -25,7 +27,9 @@ class RateController extends Controller
             $this->storeCurrency($xml);
             $this->store($xml);
             
-            return response()->json(null, 204);
+            $rates = Rate::where('published_at', Carbon::now()->format('Y-m-d'))->get();
+            
+            return response()->json($rates, 200);
         } catch (Exception $e) {
             return response()->json($e, 500);
         } 
@@ -83,38 +87,22 @@ class RateController extends Controller
      * @param  Convert $request POST parameters (amount,currency, published_at)
      * @return json    Converted amount
      */
-    public function convert(Request $request){
+    public function convert(ConvertRequest $request){
 
-        return response()->json($request->all(),200);
-        // $validator = Validator::make($request->all(), [
-        //     '0'       =>  array('required','regex:/^\d*(\.\d{1,2})?$/'),
-        //     '1'     => 'required',
-        //     '2' => 'required|date|exists:rates,published_at,currency,'.$request->currency,
-        // ],[
-        //     'regex'  => 'The :attribute should only have a maximum of 2 decimal places',
-        //     'date'   => 'The specified date is not in the correct format.',
-        //     'exists' => 'No rates found on the requested date.',
-        // ]);
+        
 
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 400);
-        // }
+        $rate = Rate::where($request->only(['currency','published_at']))->first();
 
-        // $rate = Rate::where($request->only(['currency','published_at']))->first();
+        $convertedAmount = $request->amount * $rate->rate;
 
-        // $convertedAmount = $request->amount * $rate->rate;
-
-        // return response()->json($convertedAmount, 200);
+        // Post the converted amount to the given link
         // $client = new \GuzzleHttp\Client();
         // $res = $client->request('POST', 'https://www.dev.pclender.com/pclender/demo/post_demo.php',['data'=>$convertedAmount]);
         // echo $res->getStatusCode();
-        // // 200
         // echo $res->getHeaderLine('content-type');
-        // // 'application/json; charset=utf8'
         // echo $res->getBody();
-        // '{"id": 1420053, "name": "guzzle", ...}'
-       
-
+        
+        return response()->json($convertedAmount, 200);
     }
 
 
