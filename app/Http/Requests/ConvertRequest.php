@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rate;
 
 class ConvertRequest extends FormRequest
 {
@@ -28,7 +29,7 @@ class ConvertRequest extends FormRequest
         return [
             'params.amount'       =>  array('required', 'gt:0', 'regex:/^\d*(\.\d{1,2})?$/'), //amount
             'params.currency'     => 'required|exists:currencies,code', //currency
-            'params.published_at' => 'required|date|exists:rates,published_at,currency,'.$this->input('params.currency'), //published at
+            'params.published_at' => 'required|date', //published at 
         ];
     }
 
@@ -47,7 +48,7 @@ class ConvertRequest extends FormRequest
             'params.amount.required'       => "The <b>amount</b> field should be greater than 0.",
             'params.amount.regex'          => 'The <b>amount</b> should only have a maximum of 2 decimal places',
 
-            'params.currency.exists' => "The <b>code</b> does not exist.",
+            'params.currency.exists' => "The selected <b>currency</b> does not exist.",
 
             'params.published_at.date'   => 'The specified <b>date</b> is not in the correct format.',
             'params.published_at.exists' => 'No rates found on the requested date and currency.',
@@ -55,6 +56,26 @@ class ConvertRequest extends FormRequest
         ];
     }
 
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        if($validator->fails()){
+
+        }else{
+
+            $validator->after(function ($validator) {
+                $count = Rate::where(['currency' => $this->input('params.currency'), 'published_at' => $this->input('params.published_at')])->count();
+                if ($count == 0) {
+                    $validator->errors()->add('rate', 'No rates found on the requested date and currency.');
+                }
+            });
+        }
+    }
     /**
      * Return the error messages for the defined validation rules.
      *
